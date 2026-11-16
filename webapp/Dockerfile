@@ -1,22 +1,10 @@
-# Build the React app created with Vite
 FROM node:20 AS build
-
 WORKDIR /app
-
-# Install dependencies
 COPY package*.json ./
-RUN npm install
-
-# Build the app
+RUN npm ci
 COPY . .
 RUN npm run build
-
-# Serve the build files with Nginx
-FROM nginx:alpine
-
+FROM nginxinc/nginx-unprivileged:alpine
 COPY --from=build /app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+EXPOSE 8080
